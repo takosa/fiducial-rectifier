@@ -97,7 +97,7 @@ def make_template_pdf(
 
 
 def rectify_image(
-    input_image_path: Path,
+    input_image: numpy.ndarray,
     marker_type: str,
     width_mm: float,
     height_mm: float,
@@ -111,11 +111,15 @@ def rectify_image(
     Rectify an image using detected fiducial markers.
 
     Parameters:
-    - input_image: The filename of the input image to rectify.
-    - output_image: The filename for the rectified output image.
+    - input_image: The input image to rectify as a numpy array.
     - marker_type: The type of fiducial marker to detect (e.g., "aruco").
-    - anchors: A dictionary mapping marker IDs to their corresponding anchor points in the output image.
-    - output_size: The size of the rectified output image (width, height).
+    - width_mm: The width of the output image in millimeters.
+    - height_mm: The height of the output image in millimeters.
+    - marker_size_mm: The size of the fiducial markers in millimeters.
+    - padding_mm: The padding around the markers in millimeters.
+    - output_px_per_mm: The output resolution in pixels per millimeter.
+    - include_markers: Whether to include markers in the output image.
+    - include_padding: Whether to include padding in the output image.
 
     Returns:
     - Image.Image: The rectified image as a PIL Image object.
@@ -129,13 +133,8 @@ def rectify_image(
         raise ValueError(f"Unsupported marker type: {marker_type}")
 
     
-    # Load the input image
-    img = cv2.imread(str(input_image_path))
-    if img is None:
-        raise ValueError(f"Failed to read image: {input_image_path}")
-    
     # Detect markers in the image
-    corners, ids, rejected = detector.detectMarkers(img)
+    corners, ids, rejected = detector.detectMarkers(input_image)
 
     if ids is None or len(ids) < 4:
         raise ValueError("Not enough markers detected. At least 4 markers are required for rectification.")
@@ -187,7 +186,7 @@ def rectify_image(
         raise ValueError(f"Output image size is too large: {output_width_px}px x {output_height_px}px. Please reduce the output size or increase the output_px_per_mm.")
     
     M, mask = cv2.findHomography(corners_mean, positions_px, method=cv2.RANSAC)
-    rectified_img = cv2.warpPerspective(img, M, (int(output_width_px), int(output_height_px)))
+    rectified_img = cv2.warpPerspective(input_image, M, (int(output_width_px), int(output_height_px)))
 
     print(f"Output image size: {output_width_px}px x {output_height_px}px")
 

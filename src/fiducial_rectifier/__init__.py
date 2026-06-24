@@ -1,3 +1,5 @@
+import cv2
+
 from .core import make_template_pdf, rectify_image
 
 __all__ = ["make_template_pdf", "rectify_image"]
@@ -71,7 +73,7 @@ def rectify(
         typer.Option(
             "--out",
             "-o",
-            help="Output rect ified image file path"
+            help="Output rectified image file path"
         ),
     ],
     marker_type: Annotated[
@@ -104,11 +106,17 @@ def rectify(
     ] = False,
     include_padding: Annotated[
         bool,
-        typer.Option(help="Whether to include markers in the output image")
+        typer.Option(help="Whether to include padding in the output image")
     ] = False,
 ) -> None:
+    
+    # Load the input image
+    input_image = cv2.imread(str(input_image_path))
+    if input_image is None:
+        raise ValueError(f"Failed to read image: {input_image_path}")
+    
     img = rectify_image(
-        input_image_path=input_image_path,
+        input_image=input_image,
         marker_type=marker_type,
         width_mm=width_mm,
         height_mm=height_mm,

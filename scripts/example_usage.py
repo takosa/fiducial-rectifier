@@ -7,9 +7,9 @@ import matplotlib.pyplot as plt
 PX_PER_MM = 5
 
 def process_image(input_path):
-    input_path = Path(input_path)
+    input_img = cv2.imread(str(input_path), cv2.IMREAD_IGNORE_ORIENTATION+cv2.IMREAD_COLOR)
     img = rectify_image(
-        input_image_path=input_path,
+        input_image=input_img,
         marker_type='aruco',
         width_mm=234,
         height_mm=168,
@@ -17,7 +17,7 @@ def process_image(input_path):
         padding_mm=5,
         output_px_per_mm=PX_PER_MM,
         include_markers=False,
-        include_padding=False,
+        include_padding=True,
     )
 
     img = np.array(img)
@@ -53,6 +53,7 @@ def process_image(input_path):
     
         print(f"Area: {area_mm} mm^2, Radius: {radius_mm} mm")
     
+    input_path = Path(input_path)
     output_path = input_path.parent / (input_path.stem + '_rectified.jpg')
     return img
 
@@ -64,7 +65,7 @@ if len(args) <= 1:
     print("Please specify some files.", file=sys.stderr)
     sys.exit(1)
 
-fig, axes = plt.subplots(len(args) - 1, 2, figsize=(10, 4 * (len(args) - 1)))
+fig, axes = plt.subplots(len(args) - 1, 2, figsize=(10, 4 * (len(args) - 1)), squeeze=False)
 for arg, ax1, ax2 in zip(args[1:], axes[:, 0], axes[:, 1]):
     input_path = Path(arg)
     if not input_path.exists():
