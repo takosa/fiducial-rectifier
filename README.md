@@ -103,7 +103,7 @@ The `scripts/example_usage.py` file demonstrates the usage example. This script 
 
 Below are the input image and its corresponding processed result. The printed numerical values on paper represent the measured circle radius in the real world, while the numerical values drawn on the image show the estimated values.
 
-![](output.png)
+![](example_output.png)
 
 ## Reference
 
