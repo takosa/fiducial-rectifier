@@ -96,3 +96,20 @@ rectified.save("output.jpg")
 | `padding_mm` | Gap between markers and the target area (mm) |
 | `margin_mm` | Outer margin of the template (mm) — template generation only |
 | `output_px_per_mm` | Output image resolution (px/mm) |
+
+## Example
+
+The `scripts/example_usage.py` file demonstrates the usage example. This script uses the `rectify_image` function to correct images so they appear as if they were captured from a frontal perspective. Additionally, by knowing the marker placement and inter-marker distances, we can arbitrarily set the px/mm scale for the output image and use this information to estimate the real-world size of the detected targets within the image.
+
+Below are the input image and its corresponding processed result. The printed numerical values on paper represent the measured circle radius in the real world, while the numerical values drawn on the image show the estimated values.
+
+![](output.png)
+
+## Reference
+
+- https://qiita.com/okm_6880/items/0f964484d570208d715d
+- https://qiita.com/code0327/items/c6e468da7007734c897f
+- https://pysource.com/2021/05/28/measure-size-of-an-object-with-opencv-aruco-marker-and-python/
+- https://qiita.com/mo256man/items/3a8a1f304ecdfaef6e15
+- https://neenet-pro.com/python-opencv-aruco-example/
+- https://dev.classmethod.jp/articles/opencv-aruco-marker/

@@ -2,6 +2,7 @@ from fiducial_rectifier import rectify_image
 import cv2
 import numpy as np
 from pathlib import Path
+import matplotlib.pyplot as plt 
 
 PX_PER_MM = 5
 
@@ -53,7 +54,7 @@ def process_image(input_path):
         print(f"Area: {area_mm} mm^2, Radius: {radius_mm} mm")
     
     output_path = input_path.parent / (input_path.stem + '_rectified.jpg')
-    cv2.imwrite(output_path, cv2.cvtColor(img, cv2.COLOR_RGB2BGR))
+    return img
 
 
 import sys
@@ -63,11 +64,21 @@ if len(args) <= 1:
     print("Please specify some files.", file=sys.stderr)
     sys.exit(1)
 
-for arg in args:
+fig, axes = plt.subplots(len(args) - 1, 2, figsize=(10, 4 * (len(args) - 1)))
+for arg, ax1, ax2 in zip(args[1:], axes[:, 0], axes[:, 1]):
     input_path = Path(arg)
     if not input_path.exists():
         continue
     if not input_path.suffix.lower() in ['.png', '.jpg', '.jpeg',]:
         continue
-    process_image(input_path)
+    img_in = cv2.imread(str(input_path), cv2.IMREAD_IGNORE_ORIENTATION+cv2.IMREAD_COLOR)
+    img_in = cv2.cvtColor(img_in, cv2.COLOR_BGR2RGB)
+    img_out = process_image(input_path)
+    ax1.imshow(img_in)
+    ax1.set_title(f"Input: {input_path.name}")
+    ax1.axis('off')
+    ax2.axis('off')
+    ax2.imshow(img_out)
+    ax2.set_title(f"Output: {input_path.stem}_rectified.jpg")
 
+plt.savefig("output.png", bbox_inches='tight')
